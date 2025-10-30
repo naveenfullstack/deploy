@@ -1,11 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  // Load theme from localStorage on component mount
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("budget-console-theme");
+    if (savedTheme) {
+      setIsDarkMode(savedTheme === "dark");
+    } else {
+      // Default to light mode
+      setIsDarkMode(false);
+      localStorage.setItem("budget-console-theme", "light");
+    }
+  }, []);
+
+  // Toggle theme and save to localStorage
+  const toggleTheme = () => {
+    const newTheme = !isDarkMode;
+    setIsDarkMode(newTheme);
+    localStorage.setItem("budget-console-theme", newTheme ? "dark" : "light");
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -15,12 +35,88 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
+    <div
+      className={`min-h-screen flex items-center justify-center p-4 transition-all duration-500 ${
+        isDarkMode
+          ? "bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900"
+          : "bg-gradient-to-br from-blue-50 via-indigo-100 to-purple-50"
+      }`}
+    >
+      {/* Theme Toggle Switch */}
+      <div
+        className={`fixed top-6 right-6 z-50 flex items-center space-x-3 p-4 rounded-full shadow-lg transition-all duration-300 ${
+          isDarkMode
+            ? "bg-white/10 backdrop-blur-md border border-white/20"
+            : "bg-white/80 backdrop-blur-md border border-gray-200 shadow-xl"
+        }`}
+      >
+        {/* Sun Icon */}
+        <svg
+          className={`w-5 h-5 transition-colors duration-300 ${
+            isDarkMode ? "text-gray-400" : "text-yellow-500"
+          }`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+          />
+        </svg>
+
+        {/* Toggle Switch */}
+        <button
+          onClick={toggleTheme}
+          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+            isDarkMode ? "bg-gray-600" : "bg-blue-600"
+          }`}
+          title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+        >
+          <span
+            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-300 ${
+              isDarkMode ? "translate-x-1" : "translate-x-6"
+            }`}
+          />
+        </button>
+
+        {/* Moon Icon */}
+        <svg
+          className={`w-5 h-5 transition-colors duration-300 ${
+            isDarkMode ? "text-blue-400" : "text-gray-400"
+          }`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+          />
+        </svg>
+      </div>
+
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-4 -left-4 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
-        <div className="absolute -top-4 -right-4 w-72 h-72 bg-yellow-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
-        <div className="absolute -bottom-8 left-20 w-72 h-72 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
+        <div
+          className={`absolute -top-4 -left-4 w-72 h-72 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob ${
+            isDarkMode ? "bg-purple-500" : "bg-blue-400"
+          }`}
+        ></div>
+        <div
+          className={`absolute -top-4 -right-4 w-72 h-72 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000 ${
+            isDarkMode ? "bg-yellow-500" : "bg-purple-400"
+          }`}
+        ></div>
+        <div
+          className={`absolute -bottom-8 left-20 w-72 h-72 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000 ${
+            isDarkMode ? "bg-pink-500" : "bg-indigo-400"
+          }`}
+        ></div>
       </div>
 
       <div className="relative z-10 w-full max-w-md">
@@ -41,17 +137,35 @@ export default function Login() {
               />
             </svg>
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">Budget Console</h1>
-          <p className="text-gray-300">Manage your finances with confidence</p>
+          <h1
+            className={`text-3xl font-bold mb-2 ${
+              isDarkMode ? "text-white" : "text-gray-800"
+            }`}
+          >
+            Budget Console
+          </h1>
+          <p className={isDarkMode ? "text-gray-300" : "text-gray-600"}>
+            Manage your finances with confidence
+          </p>
         </div>
 
         {/* Login Card */}
-        <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl border border-white/20 p-8">
+        <div
+          className={`backdrop-blur-lg rounded-2xl shadow-2xl p-8 transition-all duration-300 ${
+            isDarkMode
+              ? "bg-white/10 border border-white/20"
+              : "bg-white/70 border border-gray-200 shadow-xl"
+          }`}
+        >
           <div className="text-center mb-6">
-            <h2 className="text-2xl font-semibold text-white mb-2">
+            <h2
+              className={`text-2xl font-semibold mb-2 ${
+                isDarkMode ? "text-white" : "text-gray-800"
+              }`}
+            >
               Welcome Back
             </h2>
-            <p className="text-gray-300">
+            <p className={isDarkMode ? "text-gray-300" : "text-gray-600"}>
               Sign in to access your financial dashboard
             </p>
           </div>
@@ -60,7 +174,9 @@ export default function Login() {
             <div className="space-y-2">
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-200"
+                className={`block text-sm font-medium ${
+                  isDarkMode ? "text-gray-200" : "text-gray-700"
+                }`}
               >
                 Email Address
               </label>
@@ -70,13 +186,19 @@ export default function Login() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-3 bg-white/10 border text-sm border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 backdrop-blur-sm"
+                  className={`w-full px-4 py-3 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 backdrop-blur-sm ${
+                    isDarkMode
+                      ? "bg-white/10 border border-white/20 text-white placeholder-gray-400"
+                      : "bg-white/60 border border-gray-300 text-gray-800 placeholder-gray-500"
+                  }`}
                   placeholder="Enter your email"
                   required
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3">
                   <svg
-                    className="w-5 h-5 text-gray-400"
+                    className={`w-5 h-5 ${
+                      isDarkMode ? "text-gray-400" : "text-gray-500"
+                    }`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -95,7 +217,9 @@ export default function Login() {
             <div className="space-y-2">
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-200"
+                className={`block text-sm font-medium ${
+                  isDarkMode ? "text-gray-200" : "text-gray-700"
+                }`}
               >
                 Password
               </label>
@@ -105,13 +229,19 @@ export default function Login() {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 bg-white/10 border text-sm border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 backdrop-blur-sm"
+                  className={`w-full px-4 py-3 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 backdrop-blur-sm ${
+                    isDarkMode
+                      ? "bg-white/10 border border-white/20 text-white placeholder-gray-400"
+                      : "bg-white/60 border border-gray-300 text-gray-800 placeholder-gray-500"
+                  }`}
                   placeholder="Enter your password"
                   required
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3">
                   <svg
-                    className="w-5 h-5 text-gray-400"
+                    className={`w-5 h-5 ${
+                      isDarkMode ? "text-gray-400" : "text-gray-500"
+                    }`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -125,6 +255,36 @@ export default function Login() {
                   </svg>
                 </div>
               </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  className={`rounded focus:ring-blue-500 focus:ring-offset-0 ${
+                    isDarkMode
+                      ? "border-white/20 bg-white/10 text-blue-500"
+                      : "border-gray-300 bg-white text-blue-600"
+                  }`}
+                />
+                <span
+                  className={`ml-2 text-sm ${
+                    isDarkMode ? "text-gray-300" : "text-gray-600"
+                  }`}
+                >
+                  Remember me
+                </span>
+              </label>
+              <a
+                href="#"
+                className={`text-sm font-medium transition-colors ${
+                  isDarkMode
+                    ? "text-blue-400 hover:text-blue-300"
+                    : "text-blue-600 hover:text-blue-700"
+                }`}
+              >
+                Forgot password?
+              </a>
             </div>
 
             <button
@@ -163,12 +323,20 @@ export default function Login() {
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-gray-300 text-sm">
+            <p
+              className={`text-sm ${
+                isDarkMode ? "text-gray-300" : "text-gray-600"
+              }`}
+            >
               Don't have an account?{" "}
               <a
                 href="https://naveend.com/contact"
                 target="_blank"
-                className="text-blue-400 hover:text-blue-300 font-medium transition-colors"
+                className={`font-medium transition-colors ${
+                  isDarkMode
+                    ? "text-blue-400 hover:text-blue-300"
+                    : "text-blue-600 hover:text-blue-700"
+                }`}
               >
                 Contact administrator
               </a>
@@ -178,7 +346,11 @@ export default function Login() {
 
         {/* Footer */}
         <div className="mt-8 text-center">
-          <p className="text-gray-400 text-sm">
+          <p
+            className={`text-sm ${
+              isDarkMode ? "text-gray-400" : "text-gray-500"
+            }`}
+          >
             © 2025 Budget Console. Secure financial management platform.
           </p>
         </div>
