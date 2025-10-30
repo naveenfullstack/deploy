@@ -21,6 +21,9 @@ package:
     # Include only necessary files
     - "handler.js"
     - "src/**"
+    - "ui/out/**"
+    - "ui/public/**"
+    - "ui/.next/**"
     - "node_modules/**"
     - "package.json"
     
@@ -43,6 +46,11 @@ package:
     - "!.vscode/**"
     - "!.idea/**"
     - "!undefined/**"
+    - "!ui/node_modules/**"
+    - "!ui/.next/cache/**"
+    - "!ui/src/**"
+    - "!ui/app/**"
+    - "!ui/.gitignore"
 
 plugins:
   - serverless-offline
