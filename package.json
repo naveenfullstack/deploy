@@ -10,9 +10,13 @@
     "remove": "dotenv -- serverless remove",
     "info": "dotenv -- serverless info",
     "logs": "dotenv -- serverless logs",
+    "dev": "dotenv -- serverless offline",
     "offline": "dotenv -- serverless offline",
-    "test": "node deploy.js info",
-    "test-aws": "node test-aws.js"
+    "start": "npm run dev",
+    "test": "curl http://localhost:3001/",
+    "test:hello": "curl http://localhost:3001/hello",
+    "package": "dotenv -- serverless package",
+    "package-info": "dotenv -- serverless print"
   },
   "dependencies": {
     "express": "^4.19.2",
@@ -20,6 +24,7 @@
   },
   "devDependencies": {
     "dotenv": "^17.2.3",
-    "dotenv-cli": "^11.0.0"
+    "dotenv-cli": "^11.0.0",
+    "serverless-offline": "^14.4.0"
   }
 }

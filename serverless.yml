@@ -8,12 +8,55 @@ provider:
   runtime: nodejs20.x
   region: ${env:AWS_DEFAULT_REGION, 'us-east-1'}
   stage: ${opt:stage, 'dev'}
-  # Uncomment to easily set up a custom domain. Read the docs for more details:
-  # https://www.serverless.com/framework/docs/providers/aws/guide/domains
-  # domain: api.example.com
+  
+  # Environment variables passed to ALL Lambda functions
+  environment:
+    NODE_ENV: ${env:NODE_ENV, 'production'}
+    API_VERSION: ${env:API_VERSION, 'v1'}
+    STAGE: ${self:provider.stage}
+
+# Package configuration - exclude unnecessary files from Lambda deployment
+package:
+  patterns:
+    # Include only necessary files
+    - "handler.js"
+    - "node_modules/**"
+    - "package.json"
+    
+    # Exclude documentation and config files
+    - "!README.md"
+    - "!*.md"
+    - "!SECURITY.md"
+    - "!.env*"
+    - "!.git/**"
+    - "!.gitignore"
+    - "!serverless.yml"
+    - "!package-lock.json"
+    - "!.serverless/**"
+    - "!old/**"
+    - "!test/**"
+    - "!tests/**"
+    - "!*.test.js"
+    - "!*.spec.js"
+    - "!coverage/**"
+    - "!.vscode/**"
+    - "!.idea/**"
+
+plugins:
+  - serverless-offline
 
 functions:
   api:
     handler: handler.handler
     events:
       - httpApi: "*"
+
+custom:
+  serverless-offline:
+    host: 0.0.0.0
+    port: 3001
+    stage: dev
+    cors: true
+    prefix: ''
+    printOutput: true
+    ignoreJWTSignature: true

@@ -5,6 +5,11 @@ const app = express();
 app.get("/", (req, res, next) => {
   return res.status(200).json({
     message: "Hello from root!",
+    environment: {
+      NODE_ENV: process.env.NODE_ENV,
+      API_VERSION: process.env.API_VERSION,
+      STAGE: process.env.STAGE
+    }
   });
 });
 
