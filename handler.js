@@ -28,19 +28,6 @@ app.get("/", (req, res, next) => {
   });
 });
 
-// Health check route
-app.get("/health", (req, res, next) => {
-  return res.status(200).json({
-    message: "Hello, this is health check route!",
-    status: "healthy",
-    services: {
-      "user-service": "running",
-      "auth-service": "running"
-    },
-    timestamp: new Date().toISOString()
-  });
-});
-
 // Service routes
 app.use('/user', userRoutes);
 app.use('/auth', authRoutes);
