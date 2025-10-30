@@ -20,6 +20,7 @@ package:
   patterns:
     # Include only necessary files
     - "handler.js"
+    - "src/**"
     - "node_modules/**"
     - "package.json"
     
@@ -41,6 +42,7 @@ package:
     - "!coverage/**"
     - "!.vscode/**"
     - "!.idea/**"
+    - "!undefined/**"
 
 plugins:
   - serverless-offline

@@ -14,7 +14,11 @@
     "offline": "dotenv -- serverless offline",
     "start": "npm run dev",
     "test": "curl http://localhost:3001/",
-    "test:hello": "curl http://localhost:3001/hello",
+    "test:health": "curl http://localhost:3001/health",
+    "test:user-profile": "curl http://localhost:3001/user/profile",
+    "test:user-settings": "curl http://localhost:3001/user/settings",
+    "test:auth-login": "curl -X POST http://localhost:3001/auth/login -H \"Content-Type: application/json\" -d \"{}\"",
+    "test:auth-register": "curl -X POST http://localhost:3001/auth/register -H \"Content-Type: application/json\" -d \"{}\"",
     "package": "dotenv -- serverless package",
     "package-info": "dotenv -- serverless print"
   },
