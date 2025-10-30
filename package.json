@@ -1,0 +1,25 @@
+{
+  "name": "deploy",
+  "version": "1.0.0",
+  "description": "Serverless application with environment-based AWS credentials",
+  "scripts": {
+    "prestart": "node -e \"require('dotenv').config()\"",
+    "deploy": "dotenv -- serverless deploy",
+    "deploy:dev": "dotenv -- serverless deploy --stage dev",
+    "deploy:prod": "dotenv -- serverless deploy --stage prod",
+    "remove": "dotenv -- serverless remove",
+    "info": "dotenv -- serverless info",
+    "logs": "dotenv -- serverless logs",
+    "offline": "dotenv -- serverless offline",
+    "test": "node deploy.js info",
+    "test-aws": "node test-aws.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "serverless-http": "^3.2.0"
+  },
+  "devDependencies": {
+    "dotenv": "^17.2.3",
+    "dotenv-cli": "^11.0.0"
+  }
+}

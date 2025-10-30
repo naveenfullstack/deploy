@@ -1,0 +1,19 @@
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: deploy
+
+frameworkVersion: "4"
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: ${env:AWS_DEFAULT_REGION, 'us-east-1'}
+  stage: ${opt:stage, 'dev'}
+  # Uncomment to easily set up a custom domain. Read the docs for more details:
+  # https://www.serverless.com/framework/docs/providers/aws/guide/domains
+  # domain: api.example.com
+
+functions:
+  api:
+    handler: handler.handler
+    events:
+      - httpApi: "*"
