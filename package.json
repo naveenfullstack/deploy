@@ -26,7 +26,10 @@
     "package-info": "dotenv -- serverless print"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.2",
     "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.19.2",
     "serverless-http": "^3.2.0"
   },
   "devDependencies": {

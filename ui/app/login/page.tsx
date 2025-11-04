@@ -1,12 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import axios from "axios";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
 
   // Load theme from localStorage on component mount
   useEffect(() => {
@@ -20,6 +24,15 @@ export default function Login() {
     }
   }, []);
 
+  // Check if user is already logged in
+  useEffect(() => {
+    const token = localStorage.getItem("auth-token");
+    if (token) {
+      // Redirect to dashboard if already logged in
+      router.push("/dashboard");
+    }
+  }, [router]);
+
   // Toggle theme and save to localStorage
   const toggleTheme = () => {
     const newTheme = !isDarkMode;
@@ -30,8 +43,102 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Add your login logic here
-    setTimeout(() => setIsLoading(false), 1000);
+    setError("");
+
+    try {
+      // Validate input
+      if (!email || !password) {
+        setError("Please enter both email and password");
+        setIsLoading(false);
+        return;
+      }
+
+      // API configuration
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+      const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
+      const CLIENT_ID = process.env.NEXT_PUBLIC_CLIENT_ID;
+
+      if (!API_BASE_URL || !API_KEY || !CLIENT_ID) {
+        setError("Application configuration error. Please contact support.");
+        setIsLoading(false);
+        return;
+      }
+
+      // Make login request
+      const response = await axios.post(
+        `${API_BASE_URL}/auth/login`,
+        {
+          email: email.trim(),
+          password: password
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': API_KEY,
+            'x-client-id': CLIENT_ID
+          },
+          timeout: 10000 // 10 second timeout
+        }
+      );
+
+      // Handle successful login
+      if (response.data && response.data.data) {
+        const { token, user, expiresIn } = response.data.data;
+        
+        // Store authentication data
+        localStorage.setItem("auth-token", token);
+        localStorage.setItem("user-data", JSON.stringify(user));
+        localStorage.setItem("token-expires", expiresIn);
+        localStorage.setItem("login-timestamp", new Date().toISOString());
+
+        // Show success message briefly
+        console.log("Login successful:", user.email);
+        
+        // Redirect to dashboard
+        router.push("/dashboard");
+      } else {
+        setError("Invalid response from server. Please try again.");
+      }
+
+    } catch (err: any) {
+      console.error("Login error:", err);
+      
+      if (err.code === 'ECONNABORTED') {
+        setError("Request timeout. Please check your connection and try again.");
+      } else if (err.response) {
+        // Server responded with error
+        const status = err.response.status;
+        const message = err.response.data?.message || "Login failed";
+        
+        switch (status) {
+          case 400:
+            setError("Please enter valid email and password.");
+            break;
+          case 401:
+            setError("Invalid email or password. Please try again.");
+            break;
+          case 403:
+            setError("Your account has been disabled. Please contact support.");
+            break;
+          case 429:
+            setError("Too many login attempts. Please try again later.");
+            break;
+          case 500:
+            setError("Server error. Please try again later.");
+            break;
+          default:
+            setError(message || "Login failed. Please try again.");
+        }
+      } else if (err.request) {
+        // Network error
+        setError("Unable to connect to server. Please check your internet connection.");
+      } else {
+        // Other error
+        setError("An unexpected error occurred. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -171,6 +278,18 @@ export default function Login() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Error Message */}
+            {error && (
+              <div className="p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
+                <div className="flex items-center">
+                  <svg className="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                  {error}
+                </div>
+              </div>
+            )}
+
             <div className="space-y-2">
               <label
                 htmlFor="email"

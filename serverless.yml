@@ -14,6 +14,11 @@ provider:
     NODE_ENV: ${env:NODE_ENV, 'production'}
     API_VERSION: ${env:API_VERSION, 'v1'}
     STAGE: ${self:provider.stage}
+    REQUIRED_API_KEY: ${env:REQUIRED_API_KEY}
+    REQUIRED_CLIENT_ID: ${env:REQUIRED_CLIENT_ID}
+    MONGODB_URI: ${env:MONGODB_URI}
+    JWT_SECRET: ${env:JWT_SECRET}
+    JWT_EXPIRES_IN: ${env:JWT_EXPIRES_IN, '7d'}
 
 # Package configuration - exclude unnecessary files from Lambda deployment
 package:
@@ -60,6 +65,25 @@ functions:
     handler: handler.handler
     events:
       - httpApi: "*"
+      
+  simpleBudgets:
+    handler: src/services/budget/simple-handler.simpleBudgetHandler
+    timeout: 30
+    events:
+      - httpApi:
+          path: /simple-budgets
+          method: get
+
+  expenses:
+    handler: src/services/expenses/handler.expenseHandler
+    timeout: 30
+    events:
+      - httpApi:
+          path: /expenses
+          method: any
+      - httpApi:
+          path: /expenses/{proxy+}
+          method: any
 
 custom:
   serverless-offline:

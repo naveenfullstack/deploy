@@ -8,7 +8,9 @@ const nextConfig: NextConfig = {
   },
   basePath: '',
   assetPrefix: '',
-  distDir: 'out'
+  distDir: 'out',
+  // Fix for multiple lockfiles warning
+  outputFileTracingRoot: process.cwd()
 };
 
 export default nextConfig;
